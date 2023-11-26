@@ -37,23 +37,25 @@ nimble install pathutils
 Custom exceptions are raised for various error conditions, such as non-existent paths or invalid file extensions.
 
 ### Examples
-#### Example 1: Creating and Manipulating Paths
-```
+```nim
 import pathutils
 
-# Creating a strict path
-let myPath = newStrictPath("example_folder/example_file.txt", mkIfNotExist = true)
+# if any of the paths do not exist, an exception is raised
+let myPath = newStrictPath(os.getCurrentDir() & "\example_file.txt" )
+let myFile = newStrictFile(os.getCurrentDir() & "\example_file.txt" )
+let myDir  = newStrictDir(os.getCurrentDir()  & "\example_file.txt" )
 
-# Concatenating paths
-let subFolderPath = myPath / "subfolder"
-let newFilePath = subFolderPath / "new_file.txt"
+echo myDir / f"example_file.txt" # if the file does not exist, an exception is raised
 
-# Checking if a file exists at a path
-if newFilePath.fileExists:
-  echo "File exists at: ", $newFilePath
-else:
-  echo "File does not exist. Creating file."
-  discard newStrictFile($newFilePath, mkIfNotExist = true)
+echo newStrictPath("C:\Program Files") / "nodjs" # If the path does not exist, an exception is raised
+
+echo $myPath # prints the path as a string
+
+echo f"example_file.txt".ext # prints the file extension "txt"
+echo f"example_file.txt".name # prints the file name "example_file"
+echo $f"example_file.txt" # prints the file path as a string "example_file.txt"
+
+
 ```
 
 ## Testing

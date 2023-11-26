@@ -1,4 +1,4 @@
-# pathutil
+# pathutils
 
 ## Overview
 `pathutils` extends the capabilities of std/paths to offer a type of strict definitions for paths, file paths and dir paths.

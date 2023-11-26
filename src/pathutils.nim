@@ -19,7 +19,13 @@ type
 proc `$`*(self: strictfile | strictpath | strictdir): string =
     return string(self)
 
-proc `$`*(self: file): string = self.name & "." & self.ext
+proc `$`*(self: file): string = 
+  self.name & 
+    (
+      if self.ext != "":
+        "." & self.ext
+      else: ""
+    )
 
 proc has_a_file_ext*(path: string): bool = 
     if path.split(".").len > 1:
@@ -89,22 +95,27 @@ proc newStrictDir*(
     return strictdir(path)
 
 proc `f`*(self: string):file = 
+  if "/" in self:
+    raise newException(BadFileNameError, "File name cannot contain '/'")
+  if "\\" in self:
+    raise newException(BadFileNameError, "File name cannot contain '\\'")
   if not self.has_a_file_ext:
-    raise newException(BadFileNameError, "Path does not have a file extension")
+    return file(name:self)
   return file(ext:self.get_file_ext(with_dot=false).get, name:self.split(".")[0])
 
 # newStrictPath("...") / newStrictPath("...")
-func `/`*(head, tail: strictpath ): strictpath {.borrow.} 
-# newStrictDir("...") / newStrictDir("...")
-func `/`*(head, tail: strictdir ): strictdir {.borrow.} 
-
+proc `/`*(head, tail: strictpath ): strictpath        = newStrictPath($head / $tail)
 
 # newStrictDir("...") / "..."
-proc `/`*(head: strictdir, tail: string ): strictdir  = strictdir($head & "/" & tail)
-# newStrictDir("...") / f"my_file.text"
-proc `/`*(head: strictdir, tail: file ): strictfile  = strictfile($head & "/" & $tail)
+proc `/`*(head: strictdir, tail: string ): strictdir   = newStrictDir($head / tail)
+
+# newStrictDir("...") / f"my_file.text" 
+proc `/`*(head: strictdir, tail: file ): strictfile    = newStrictFile($head / $tail)
 
 # newStrictPath("...") / "..."
-proc `/`*(head: strictpath, tail: string ): strictpath  = strictpath($head & "/" & tail)
+proc `/`*(head: strictpath, tail: string ): strictpath = newStrictPath($head / tail)
+
 # newStrictPath("...") / f"my_file.text"
-proc `/`*(head: strictpath, tail: file ): strictfile  = strictfile($head & "/" & $tail)
+proc `/`*(head: strictpath, tail: file ): strictfile   = newStrictFile($head / $tail)
+
+

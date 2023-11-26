@@ -36,6 +36,26 @@ nimble install pathutils
 ### Error Handling
 Custom exceptions are raised for various error conditions, such as non-existent paths or invalid file extensions.
 
+### Examples
+#### Example 1: Creating and Manipulating Paths
+```
+import pathutils
+
+# Creating a strict path
+let myPath = newStrictPath("example_folder/example_file.txt", mkIfNotExist = true)
+
+# Concatenating paths
+let subFolderPath = myPath / "subfolder"
+let newFilePath = subFolderPath / "new_file.txt"
+
+# Checking if a file exists at a path
+if newFilePath.fileExists:
+  echo "File exists at: ", $newFilePath
+else:
+  echo "File does not exist. Creating file."
+  discard newStrictFile($newFilePath, mkIfNotExist = true)
+```
+
 ## Testing
 To run tests, use `nimble test`. The test suite covers a range of scenarios including path recognition, file and directory existence, error handling, and path concatenation.
 

@@ -1,7 +1,7 @@
 # pathutils
 
 ## Overview
-`pathutils` extends the capabilities of std/paths to offer a type of strict definitions for paths, file paths and dir paths.
+`pathutils` extends the capabilities of std/paths to offer strict definitions for paths, file paths and dir paths.
 If a path is not valid, an exception is raised. This allows you to fail fast and handle errors early.
 
 ## Features

@@ -43,7 +43,7 @@ import pathutils
 # if any of the paths do not exist, an exception is raised
 let myPath = newStrictPath(os.getCurrentDir() & "\example_file.txt" )
 let myFile = newStrictFile(os.getCurrentDir() & "\example_file.txt" )
-let myDir  = newStrictDir(os.getCurrentDir()  & "\example_file.txt" )
+let myDir  = newStrictDir(os.getCurrentDir()  )
 
 echo myDir / f"example_file.txt" # if the file does not exist, an exception is raised
 

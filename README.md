@@ -61,15 +61,22 @@ This can be really useful when you wish to define your own StrictFile types.
 Now you know with confidence that whatever file myThing is acting on is of the file type you need and actually exists.
 
 ```nim
-type strictimg = object
+type strictimg = distinct string
 
 proc newStrictImg(path:string) : strictimg =
   try:
-    NewStrictFile(path, allowed_ext: @["png", "jpg", "jpeg", "gif"])
+    discard newStrictFile(path, allowed_ext= @["png", "jpg", "jpeg", "gif"])
   finally:
     return path.strictimg
 
-proc myThing(t: strictimg) ...
+let p = newStrictImg(r"C:\Users\...\Screenshot 2023-11-23 181938.png")
+echo p.string
+
+proc myThing(t: strictimg) = 
+  echo t.string
+
+myThing(p)
+
 ```
 
 ## Testing

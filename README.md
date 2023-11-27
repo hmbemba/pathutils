@@ -11,9 +11,7 @@ If a path is not valid, an exception is raised. This allows you to fail fast and
 - **File and Directory Creation**: Functions to create files and directories, with options to handle non-existent paths.
 
 ## Installation
-To install `pathutils`, add the following to your Nimble file:
 ```nim
-# Add this to your .nimble file
 nimble install pathutils
 ```
 
@@ -54,8 +52,24 @@ echo $myPath # prints the path as a string
 echo f"example_file.txt".ext # prints the file extension "txt"
 echo f"example_file.txt".name # prints the file name "example_file"
 echo $f"example_file.txt" # prints the file path as a string "example_file.txt"
+```
 
+### Extension
 
+This can be really useful when you wish to define your own StrictFile types.
+
+Now you know with confidence that whatever file myThing is acting on is of the file type you need and actually exists.
+
+```nim
+type strictimg = object
+
+proc newStrictImg(path:string) : strictimg =
+  try:
+    NewStrictFile(path, allowed_ext: @["png", "jpg", "jpeg", "gif"])
+  finally:
+    return path.strictimg
+
+proc myThing(t: strictimg) ...
 ```
 
 ## Testing

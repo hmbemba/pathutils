@@ -44,7 +44,7 @@ proc get_file_ext*(path: string, with_dot = true): Option[string] =
 
 proc newStrictPath*(
                     path                      : string, 
-                    mkIfNotExist              = false,
+                    mkIfNotExist              = false ,
                 ) : strictpath =
   if path.fileExists:
     return strictpath(path)

@@ -119,3 +119,17 @@ proc `/`*(head: strictpath, tail: string ): strictpath = newStrictPath($head / t
 proc `/`*(head: strictpath, tail: file ): strictfile   = newStrictFile($head / $tail)
 
 
+type strictimg = distinct string
+
+proc newStrictImg(path:string) : strictimg =
+  try:
+    discard newStrictFile(path, allowed_ext= @["png", "jpg", "jpeg", "gif"])
+  finally:
+    return path.strictimg
+
+
+let p = newStrictImg(r"C:\Users\hmbem\Pictures\Screenshots\Screenshot 2023-11-23 181938.png")
+proc myThing(t: strictimg) = 
+  echo t.string
+
+myThing(p)

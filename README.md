@@ -1,4 +1,5 @@
 # pathutils
+`nimble install pathutils`
 
 ## Overview
 `pathutils` extends the capabilities of std/paths to offer strict definitions for paths, file paths and dir paths.
@@ -9,11 +10,6 @@ If a path is not valid, an exception is raised. This allows you to fail fast and
 - **Error Handling**: Custom exceptions like `PathNotFoundError`, `BadExtentionError`, and `BadFileNameError` for better error management.
 - **Path Manipulation**: Borrows the `/` for manipulating and combining paths, files, and directories.
 - **File and Directory Creation**: Functions to create files and directories, with options to handle non-existent paths.
-
-## Installation
-```nim
-nimble install pathutils
-```
 
 ## Usage
 

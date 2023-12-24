@@ -3,7 +3,8 @@
 
 ## Overview
 `pathutils` extends the capabilities of std/paths to offer strict definitions for paths, file paths and dir paths.
-If a path is not valid, an exception is raised. This allows you to fail fast and handle errors early.
+If a path is not valid, an exception is raised. 
+This allows you to fail fast and handle errors early.
 
 ## Features
 - **Strict Type Definitions**: `strictpath`, `strictdir`, and `strictfile` ensure clear distinctions between different types of file system entities.

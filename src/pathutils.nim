@@ -7,10 +7,9 @@ type
     strictpath* = distinct Path   
     strictdir*  = distinct Path
     strictfile* = distinct Path
-    file*       = object
+    filename*       = object
       ext*      : string
-      name*     : string
-
+      stem*     : string
 
     PathNotFoundError* = object of ValueError
     BadExtentionError* = object of ValueError
@@ -19,8 +18,8 @@ type
 proc `$`*(self: strictfile | strictpath | strictdir): string =
     return string(self)
 
-proc `$`*(self: file): string = 
-  self.name & 
+proc `$`*(self: filename): string = 
+  self.stem & 
     (
       if self.ext != "":
         "." & self.ext
@@ -60,13 +59,13 @@ proc newStrictPath*(
     raise newException(PathNotFoundError, "Path not found: " & path)
 
 proc newStrictFile*(
-                    path                      : string, 
-                    mkIfNotExist              = false,
-                    content                   = "",
-                    allowed_ext : seq[string] = @[],
+                      path                      : string, 
+                      mkIfNotExist              = false,
+                      content                   = "",
+                      allowed_ext : seq[string] = @[],
                 ) : strictfile =    
     if allowed_ext.len > 0:
-        let file_ext_get = path.get_file_ext(with_dot=false)#.get.toLower
+        let file_ext_get = path.get_file_ext(with_dot=false)
         if file_ext_get.isNone:
             raise newException(BadExtentionError,fmt"""Path "{path}" does not have a valid extension! Allowed extensions include :{allowed_ext}""")
         
@@ -83,8 +82,8 @@ proc newStrictFile*(
     return strictfile(path)
 
 proc newStrictDir*(
-                    path                      : string, 
-                    mkIfNotExist              = false,
+                    path         : string, 
+                    mkIfNotExist = false,
                 ) : strictdir =
     if not path.dirExists:
         if mkIfNotExist:
@@ -94,28 +93,28 @@ proc newStrictDir*(
             raise newException(PathNotFoundError, "Directory not found: " & path)
     return strictdir(path)
 
-proc `f`*(self: string):file = 
+proc `f`*(self: string):filename = 
   if "/" in self:
     raise newException(BadFileNameError, "File name cannot contain '/'")
   if "\\" in self:
     raise newException(BadFileNameError, "File name cannot contain '\\'")
   if not self.has_a_file_ext:
-    return file(name:self)
-  return file(ext:self.get_file_ext(with_dot=false).get, name:self.split(".")[0])
+    return filename(stem:self)
+  return filename(ext:self.get_file_ext(with_dot=false).get, stem:self.split(".")[0])
 
-# newStrictPath("...") / newStrictPath("...")
+# newStrictPath("...") / newStrictPath("...") -> strictpath
 proc `/`*(head, tail: strictpath ): strictpath        = newStrictPath($head / $tail)
 
-# newStrictDir("...") / "..."
+# newStrictDir("...") / "..." -> strictdir
 proc `/`*(head: strictdir, tail: string ): strictdir   = newStrictDir($head / tail)
+ 
+# newStrictDir("...") / f"my_file.text"  -> strictfile
+proc `/`*(head: strictdir, tail: filename ): strictfile    = newStrictFile($head / $tail)
 
-# newStrictDir("...") / f"my_file.text" 
-proc `/`*(head: strictdir, tail: file ): strictfile    = newStrictFile($head / $tail)
-
-# newStrictPath("...") / "..."
+# newStrictPath("...") / "..." -> strictpath
 proc `/`*(head: strictpath, tail: string ): strictpath = newStrictPath($head / tail)
 
-# newStrictPath("...") / f"my_file.text"
-proc `/`*(head: strictpath, tail: file ): strictfile   = newStrictFile($head / $tail)
+# newStrictPath("...") / f"my_file.text" -> strictfile
+proc `/`*(head: strictpath, tail: filename ): strictfile   = newStrictFile($head / $tail)
 
 

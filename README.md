@@ -18,15 +18,14 @@ This allows you to fail fast and handle errors early.
 - `strictpath`: Represents a path, either a file or a directory that must exist.
 - `strictdir` : Represents a directory path that must exist.
 - `strictfile`: Represents a file that must exist.
+- `filename`  : Represents a file name, with functions to extract the name and extension.
 
 ### Procedures
 - `newStrictPath(path: string, mkIfNotExist: bool = false): strictpath`
 - `newStrictFile(path: string, mkIfNotExist: bool = false, content: string = "", allowed_ext: seq[string] = @[]): strictfile`
 - `newStrictDir(path: string, mkIfNotExist: bool = false): strictdir`
-- `f(string): file`: Converts a string to a `file` type, ensuring it has a file extension.
-
-### Path Concatenation
-- Overloaded `/` operator for combining `strictpath`, `strictdir`, and `strictfile` types with strings or each other.
+- `f(string): filename`: Converts a string to a `filename` type
+- Overloaded `/` operator for combining `strictpath`, `strictdir`, `strictfile` and `filename` types with strings or each other.
 
 ### Error Handling
 Custom exceptions are raised for various error conditions, such as non-existent paths or invalid file extensions.
@@ -36,20 +35,20 @@ Custom exceptions are raised for various error conditions, such as non-existent 
 import pathutils
 
 # if any of the paths do not exist, an exception is raised
-let myStrictPath = newStrictPath(os.getCurrentDir() & "\example_file.txt" )
-let myStrictFile = newStrictFile(os.getCurrentDir() & "\example_file.txt" )
+let myStrictPath = newStrictPath(os.getCurrentDir() & r"\example_file.txt" )
+let myStrictFile = newStrictFile(os.getCurrentDir() & r"\example_file.txt" )
 let myStrictDir  = newStrictDir(os.getCurrentDir()  )
 
 # if the file does not exist, an exception is raised
 # If the file does exist, it returns a strictfile type
 echo myStrictDir / f"example_file.txt" 
 
-echo newStrictPath("C:\Program Files") / "nodejs" # If the path does not exist, an exception is raised
+echo newStrictPath(r"C:\Program Files") / "nodejs" # If the path does not exist, an exception is raised
 
 echo $myPath # prints the path as a string
 
 echo f"example_file.txt".ext  # prints the file extension "txt"
-echo f"example_file.txt".name # prints the file name "example_file"
+echo f"example_file.txt".stem # prints the file stem "example_file"
 echo $f"example_file.txt"     # prints the file path as a string "example_file.txt"
 ```
 
@@ -57,7 +56,7 @@ echo $f"example_file.txt"     # prints the file path as a string "example_file.t
 
 This can be really useful when you wish to define your own StrictFile types.
 
-Now you know with confidence that whatever file myThing is acting on is of the file type you need and actually exists.
+Now you know with confidence that whatever file myThing is acting on is of the file type you need and actually exists at compile time.
 
 ```nim
 type strictimg = distinct string

@@ -1,5 +1,10 @@
 # pathutils
-`nimble install pathutils`
+
+## Installation 
+
+```
+nimble install pathutils
+```
 
 ## Overview
 `pathutils` extends the capabilities of std/paths to offer strict definitions for paths, file paths and dir paths.
@@ -13,7 +18,6 @@ This allows you to fail fast and handle errors early.
 - **File and Directory Creation**: Functions to create files and directories, with options to handle non-existent paths.
 
 ## Usage
-
 ### Types
 - `strictpath`: Represents a path, either a file or a directory that must exist.
 - `strictdir` : Represents a directory path that must exist.
@@ -28,9 +32,11 @@ This allows you to fail fast and handle errors early.
 - Overloaded `/` operator for combining `strictpath`, `strictdir`, `strictfile` and `filename` types with strings or each other.
 
 ### Error Handling
+
 Custom exceptions are raised for various error conditions, such as non-existent paths or invalid file extensions.
 
 ### Examples
+
 ```nim
 import pathutils
 
@@ -82,4 +88,3 @@ To run tests, use `nimble test`. The test suite covers a range of scenarios incl
 
 ## License
 `pathutils` is released under the MIT License. See the LICENSE file for more details.
-

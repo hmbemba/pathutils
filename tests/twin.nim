@@ -23,7 +23,7 @@ test "Recognizes a strictdir exists",
 
 ### file tests
 test "Recognizes a strictfile is a file":
-  check f"test_file.txt" is file
+  check f"test_file.txt" is filename
 
 test "Validates file has correct extension":
   let file = f"image.png"
@@ -38,7 +38,7 @@ test "Recognizes a strictfile with / proc":
   check newStrictDir("test_dir") / f"test_file_in_test_dir.txt"  is strictfile
 
 # Error tests
-test "Recognizes a bade file name":
+test "Recognizes a bad file name":
   expect BadFileNameError:
     discard f"rjjreojr"
 

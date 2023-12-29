@@ -2,12 +2,11 @@ import std/paths, os, sequtils, strutils, strformat, options
 
 export paths, os
 
-
 type
     strictpath* = distinct Path   
     strictdir*  = distinct Path
     strictfile* = distinct Path
-    filename*       = object
+    filename*   = object
       ext*      : string
       stem*     : string
 

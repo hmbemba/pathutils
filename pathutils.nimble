@@ -1,6 +1,6 @@
 # Package
 
-version       = "0.1.2"
+version       = "0.1.3"
 author        = "Harrison Mbemba"
 description   = "Utilities for handling paths"
 license       = "MIT"

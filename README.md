@@ -1,90 +1,121 @@
 # pathutils
 
-## Installation 
+## Installation
 
 ```
 nimble install pathutils
 ```
 
 ## Overview
-`pathutils` extends the capabilities of std/paths to offer strict definitions for paths, file paths and dir paths.
-If a path is not valid, an exception is raised. 
-This allows you to fail fast and handle errors early.
 
-## Features
-- **Strict Type Definitions**: `strictpath`, `strictdir`, and `strictfile` ensure clear distinctions between different types of file system entities.
-- **Error Handling**: Custom exceptions like `PathNotFoundError`, `BadExtentionError`, and `BadFileNameError` for better error management.
-- **Path Manipulation**: Borrows the `/` for manipulating and combining paths, files, and directories.
-- **File and Directory Creation**: Functions to create files and directories, with options to handle non-existent paths.
+`pathutils` enhances the standard Nim `std/paths` module by introducing strict path types and robust error handling mechanisms. It is designed to enforce strict compliance with path definitions and to identify errors early in the development process.
 
+## Key Features
+
+- **Strict Path Types**: Introduces `strictdir` and `strictfile` types. These types let you ensure that the path to the dir or file exists at compile time 
+- **Path Manipulation**: Borrows the `/` for manipulating and combining paths, files, and directories. - **File and Directory Creation**: Functions to create files and directories, with options to handle non-existent paths.
 ## Usage
-### Types
-- `strictpath`: Represents a path, either a file or a directory that must exist.
-- `strictdir` : Represents a directory path that must exist.
-- `strictfile`: Represents a file that must exist.
-- `filename`  : Represents a file name, with functions to extract the name and extension.
 
-### Procedures
-- `newStrictPath(path: string, mkIfNotExist: bool = false): strictpath`
-- `newStrictFile(path: string, mkIfNotExist: bool = false, content: string = "", allowed_ext: seq[string] = @[]): strictfile`
-- `newStrictDir(path: string, mkIfNotExist: bool = false): strictdir`
-- `f(string): filename`: Converts a string to a `filename` type
-- Overloaded `/` operator for combining `strictpath`, `strictdir`, `strictfile` and `filename` types with strings or each other.
+### Types
+
+- `strictdir`: A distinct path type for directories.
+- `strictfile`: A distinct path type for files.
+- `filename`: A type representing a file name, allowing extraction of stem and extension.
+
+### Functions
+
+- `newStrictFile`: Creates or validates a file path.
+- `newStrictDir`: Creates or validates a directory path.
+- `f`: Converts a string to a `filename` type.
+- Overloaded `/` operator: Combines path types and strings for path manipulation.
 
 ### Error Handling
 
-Custom exceptions are raised for various error conditions, such as non-existent paths or invalid file extensions.
+Custom exceptions are thrown for various scenarios such as non-existent paths or invalid file extensions, enhancing the robustness of path handling.
 
 ### Examples
+#### Basics
 
-```nim
+```
 import pathutils
 
-# if any of the paths do not exist, an exception is raised
-let myStrictPath = newStrictPath(os.getCurrentDir() & r"\example_file.txt" )
-let myStrictFile = newStrictFile(os.getCurrentDir() & r"\example_file.txt" )
-let myStrictDir  = newStrictDir(os.getCurrentDir()  )
+# Create or validate paths; exceptions are thrown for non-existent paths
+let myStrictDir  = newStrictDir("path/to/directory")
+if not myStrictDir.ok:
+  echo "handle error"
 
-# if the file does not exist, an exception is raised
-# If the file does exist, it returns a strictfile type
-echo myStrictDir / f"example_file.txt" 
+let dir_path = myStrictDir.val.get
 
-echo newStrictPath(r"C:\Program Files") / "nodejs" # If the path does not exist, an exception is raised
+# Combining paths using the `/` operator
+echo myStrictDir / f"file.txt" 
 
-echo $myPath # prints the path as a string
-
-echo f"example_file.txt".ext  # prints the file extension "txt"
-echo f"example_file.txt".stem # prints the file stem "example_file"
-echo $f"example_file.txt"     # prints the file path as a string "example_file.txt"
+# Printing path information
+echo $myStrictFile
+echo f"file.txt".ext  
+echo f"file.txt".stem 
 ```
 
-### Extension
+#### Real Use Case 
+- One could create a proc that only takes a strictfile ensuring that it exists
 
-This can be really useful when you wish to define your own StrictFile types.
+```
+import pathutils
 
-Now you know with confidence that whatever file myThing is acting on is of the file type you need and actually exists at compile time.
+proc newDB(file:strictfile) = 
+  create_connection $strictfile
+```
 
-```nim
+- Then users of that proc would need to make sure they're passing in a strictfile
+
+```
+import pathutils
+
+let db_path = "path/to/db".newStrictFile
+if not db_path.ok:
+  echo "dang"
+  quit()
+
+let my_db = db_path.val.get.newDB
+```
+
+- If a user of your library doesn't check if the strictfile is ok the option will return none
+```
+import pathutils
+
+let db_path = "path/to/db".newStrictFile
+
+# "path/to/db" doesn't exist so val is a none(strictfile)
+let my_db = db_path.val.get.newDB
+```
+
+#### Custom Extensions
+
+Easily extend the library to create your own strict path types, ensuring files of specific filetypes exist.
+
+```
 type strictimg = distinct string
 
-proc newStrictImg(path:string) : strictimg =
-  try:
-    discard newStrictFile(path, allowed_ext= @["png", "jpg", "jpeg", "gif"])
-  finally:
-    return path.strictimg
+proc newStrictImg(path: string): tuple[ok:bool, err:string, val:Option[strictimg]] =
+  let img = newStrictFile(path, allowed_ext=@["png", "jpg", "jpeg", "gif"])
+  if not img.ok:
+    (img.ok, img.err, none(strictimg))
+  else:
+    (img.ok, img.err, some(path.strictimg))
 
-let p = newStrictImg(r"C:\Users\...\Screenshot 2023-11-23 181938.png")
-echo p.string
+let myImage = newStrictImg("path/to/image.png")
+echo $myImage.val.get
 
-proc myThing(t: strictimg) = 
-  echo t.string
+proc processImage(image: strictimg) = 
+  echo $image
 
-myThing(p)
+processImage(myImage)
 
 ```
 
 ## Testing
-To run tests, use `nimble test`. The test suite covers a range of scenarios including path recognition, file and directory existence, error handling, and path concatenation.
+
+Run `nimble test` to execute the test suite, covering various scenarios like path validation, file and directory management, and error handling.
 
 ## License
-`pathutils` is released under the MIT License. See the LICENSE file for more details.
+
+`pathutils` is available under the MIT License. For more information, see the LICENSE file included with the distribution.
